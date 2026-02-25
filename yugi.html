@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yugi Holo Effect</title>
+    <style>
+        :root {
+            --color1: rgb(0, 231, 255);
+            --color2: rgb(255, 0, 231);
+            --back: #211799;
+        }
+
+        body {
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        .card {
+            width: 320px;
+            height: 446px;
+            background-color: var(--back);
+            border-radius: 5%/3.5%;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                -13px -13px 13px -15px var(--color1),
+                13px 13px 13px -15px var(--color2),
+                0 0 4px 2px rgba(255, 255, 255, 0.5),
+                0 35px 25px -15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+            perspective: 2000px;
+        }
+
+        .card:before,
+        .card:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        .card:before {
+            background-image: linear-gradient(
+                115deg,
+                transparent 0%,
+                var(--color1) 30%,
+                transparent 47.5%,
+                transparent 52.5%,
+                var(--color2) 70%,
+                transparent 100%
+            );
+            background-position: var(--bg-pos-x, 50%) var(--bg-pos-y, 50%);
+            background-size: 300% 300%;
+        }
+
+        .card:after {
+            background-image: url("https://assets.codepen.io/13471/sparkles.gif");
+            background-position: var(--bg-pos-x2, 50%) var(--bg-pos-y2, 50%);
+            background-size: 160%;
+            filter: brightness(1);
+        }
+
+        .card.active:before {
+            opacity: 1;
+            background-image: linear-gradient(
+                115deg,
+                transparent 30%,
+                var(--color1) 48%,
+                var(--color2) 53%,
+                transparent 70%
+            );
+            filter: opacity(0.66);
+        }
+
+        .card.active:after {
+            filter: brightness(2.5);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="card"></div>
+
+    <script>
+        const card = document.getElementById('card');
+
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const l = e.clientX - rect.left;
+            const t = e.clientY - rect.top;
+            const h = rect.height;
+            const w = rect.width;
+
+            const lp = Math.abs(Math.floor(100 / w * l) - 100);
+            const tp = Math.abs(Math.floor(100 / h * t) - 100);
+
+            const lp2 = (50 - (Math.abs(Math.floor(100 / w * l) - 100)) / 10) + 5;
+            const tp2 = (50 - (Math.abs(Math.floor(100 / h * t) - 100)) / 10) + 5;
+
+            const ty = (tp - 50) / 2;
+            const tx = ((lp - 50) * .5) * -1;
+
+            card.style.transform = `rotateX(${ty}deg) rotateY(${tx}deg)`;
+            card.style.setProperty('--bg-pos-x', `${lp}%`);
+            card.style.setProperty('--bg-pos-y', `${tp}%`);
+            card.style.setProperty('--bg-pos-x2', `${lp2}%`);
+            card.style.setProperty('--bg-pos-y2', `${tp2}%`);
+
+            card.classList.add('active');
+        });
+
+        card.addEventListener('mouseout', () => {
+            card.classList.remove('active');
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+    </script>
+</body>
+</html>
